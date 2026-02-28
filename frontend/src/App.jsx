@@ -84,8 +84,11 @@ const EXAMPLE_PROMPTS = [
 
 /** Parse inline markdown (bold, italic) into React elements */
 function parseInline(text) {
+  if (!text || typeof text !== 'string') return text;
+
+  // Process **bold** first, then *italic*
   const parts = [];
-  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+  const regex = /\*\*(.+?)\*\*|\*([^*]+?)\*/g;
   let lastIndex = 0;
   let match;
 
@@ -93,10 +96,10 @@ function parseInline(text) {
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
-    if (match[1]) {
-      parts.push(<strong key={match.index}>{match[1]}</strong>);
-    } else if (match[2]) {
-      parts.push(<em key={match.index}>{match[2]}</em>);
+    if (match[1] !== undefined) {
+      parts.push(<strong key={`b-${match.index}`}>{match[1]}</strong>);
+    } else if (match[2] !== undefined) {
+      parts.push(<em key={`i-${match.index}`}>{match[2]}</em>);
     }
     lastIndex = regex.lastIndex;
   }
@@ -178,9 +181,8 @@ function FormatResponse({ text }) {
 
     flushList();
 
-    // Bold label line: "Issue:", "Severity:", "DIY Steps:" etc.
-    // Also handle markdown bold labels like "**Issue:**"
-    const boldLabelMatch = trimmed.match(/^\*\*([A-Za-z][A-Za-z\s\/]+):\*\*\s*(.*)/);
+    // Bold label line: "**Issue:**", "**Issue**:", "Issue:" etc.
+    const boldLabelMatch = trimmed.match(/^\*\*([A-Za-z][A-Za-z\s\/]+?)(?::?\*\*:?)\s*(.*)/);
     if (boldLabelMatch) {
       elements.push(
         <div key={`label-${i}`} className="response-label-line">
@@ -278,7 +280,7 @@ function Checklist({ items, open, onToggle, onAdd, onDelete, onClearDone, darkMo
                   onChange={() => onToggle(item.id)}
                   className="checklist-checkbox"
                 />
-                <span className="checklist-text">{item.text}</span>
+                <span className="checklist-text">{parseInline(item.text)}</span>
               </label>
               <button
                 className="checklist-delete"
