@@ -131,6 +131,12 @@ body.dark {
   margin-bottom: 2px;
 }
 
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .header-top h1 {
   font-size: 1.4rem;
   font-weight: 700;
@@ -208,9 +214,10 @@ body.dark {
   padding: 0 20px;
 }
 
-.empty-icon {
-  font-size: 3rem;
+.mascot-icon {
   margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
 }
 
 .empty-state h2 {
@@ -269,6 +276,25 @@ body.dark {
 
 .message.assistant {
   justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.assistant-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.app.dark .assistant-avatar {
+  background: #1e3a5f;
 }
 
 .message-bubble {
@@ -553,8 +579,19 @@ body.dark {
     margin-top: 40px;
   }
 
-  .empty-icon {
-    font-size: 2.5rem;
+  .mascot-icon svg {
+    width: 100px;
+    height: 100px;
+  }
+
+  .assistant-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .assistant-avatar svg {
+    width: 28px;
+    height: 28px;
   }
 
   .empty-state h2 {
