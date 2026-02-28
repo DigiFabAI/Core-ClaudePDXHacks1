@@ -82,6 +82,32 @@ const EXAMPLE_PROMPTS = [
   "My toilet keeps running after flushing",
 ];
 
+/** Parse inline markdown (bold, italic) into React elements */
+function parseInline(text) {
+  const parts = [];
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    if (match[1]) {
+      parts.push(<strong key={match.index}>{match[1]}</strong>);
+    } else if (match[2]) {
+      parts.push(<em key={match.index}>{match[2]}</em>);
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 /** Parse structured AI response into formatted JSX */
 function FormatResponse({ text }) {
   if (!text) return null;
@@ -96,13 +122,13 @@ function FormatResponse({ text }) {
       if (listType === 'ol') {
         elements.push(
           <ol key={`list-${elements.length}`} className="response-list">
-            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+            {listItems.map((item, i) => <li key={i}>{parseInline(item)}</li>)}
           </ol>
         );
       } else {
         elements.push(
           <ul key={`list-${elements.length}`} className="response-list">
-            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+            {listItems.map((item, i) => <li key={i}>{parseInline(item)}</li>)}
           </ul>
         );
       }
@@ -120,6 +146,18 @@ function FormatResponse({ text }) {
       continue;
     }
 
+    // Markdown heading: "## ...", "### ..."
+    const headingMatch = trimmed.match(/^#{1,4}\s+(.+)/);
+    if (headingMatch) {
+      flushList();
+      elements.push(
+        <div key={`heading-${i}`} className="response-section-heading">
+          {parseInline(headingMatch[1])}
+        </div>
+      );
+      continue;
+    }
+
     // Numbered list item: "1. ...", "2) ..."
     const numberedMatch = trimmed.match(/^\d+[\.\)]\s+(.+)/);
     if (numberedMatch) {
@@ -129,8 +167,8 @@ function FormatResponse({ text }) {
       continue;
     }
 
-    // Bullet list item: "- ...", "* ...", "  - ..."
-    const bulletMatch = trimmed.match(/^[-*]\s+(.+)/);
+    // Bullet list item: "- ...", "* ..." (but not "**bold**")
+    const bulletMatch = trimmed.match(/^[-]\s+(.+)/);
     if (bulletMatch) {
       if (listType && listType !== 'ul') flushList();
       listType = 'ul';
@@ -141,29 +179,41 @@ function FormatResponse({ text }) {
     flushList();
 
     // Bold label line: "Issue:", "Severity:", "DIY Steps:" etc.
-    const labelMatch = trimmed.match(/^([A-Z][A-Za-z\s\/]+):\s*(.*)/);
-    if (labelMatch) {
+    // Also handle markdown bold labels like "**Issue:**"
+    const boldLabelMatch = trimmed.match(/^\*\*([A-Za-z][A-Za-z\s\/]+):\*\*\s*(.*)/);
+    if (boldLabelMatch) {
       elements.push(
         <div key={`label-${i}`} className="response-label-line">
-          <strong className="response-label">{labelMatch[1]}:</strong>{' '}
-          {labelMatch[2] && <span>{labelMatch[2]}</span>}
+          <strong className="response-label">{boldLabelMatch[1]}:</strong>{' '}
+          {boldLabelMatch[2] && <span>{parseInline(boldLabelMatch[2])}</span>}
         </div>
       );
       continue;
     }
 
-    // Heading-like lines (all caps or short bold-looking lines ending with ":")
+    const labelMatch = trimmed.match(/^([A-Z][A-Za-z\s\/]+):\s*(.*)/);
+    if (labelMatch) {
+      elements.push(
+        <div key={`label-${i}`} className="response-label-line">
+          <strong className="response-label">{labelMatch[1]}:</strong>{' '}
+          {labelMatch[2] && <span>{parseInline(labelMatch[2])}</span>}
+        </div>
+      );
+      continue;
+    }
+
+    // Heading-like lines (short lines ending with ":")
     if (trimmed.endsWith(':') && trimmed.length < 60) {
       elements.push(
         <div key={`heading-${i}`} className="response-section-heading">
-          {trimmed}
+          {parseInline(trimmed)}
         </div>
       );
       continue;
     }
 
     // Regular paragraph
-    elements.push(<p key={`p-${i}`} className="response-paragraph">{trimmed}</p>);
+    elements.push(<p key={`p-${i}`} className="response-paragraph">{parseInline(trimmed)}</p>);
   }
 
   flushList();
