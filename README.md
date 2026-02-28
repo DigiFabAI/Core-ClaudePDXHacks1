@@ -6,6 +6,7 @@
 
 ## Overview
 
+<<<<<<< HEAD
 ### FRONTEND — React Chat UI
 
 Simple text input → send button → message list. That's it.
@@ -21,12 +22,29 @@ One endpoint: receives user message, calls Claude API, returns response.
 `FastAPI (Python) or Express (Node)`
 
 ↓
+=======
+### Frontend — React Chat UI
+
+Simple text input, send button, message list. That's it.
+
+**Tech:** React or plain HTML/JS
+
+### Backend — API Server
+
+One endpoint: receives user message, calls Claude API, returns response.
+
+**Tech:** FastAPI (Python) or Express (Node)
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 
 ### AI — Claude API
 
 System prompt turns Claude into a handyman expert. Diagnoses issues, gives DIY steps, estimates costs.
 
+<<<<<<< HEAD
 `Claude Sonnet · tool use for structured output`
+=======
+**Tech:** Claude Sonnet · tool use for structured output
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 
 > **That's it. 3 pieces. User types → backend calls Claude → response appears.**
 
@@ -36,21 +54,37 @@ System prompt turns Claude into a handyman expert. Diagnoses issues, gives DIY s
 
 ### Request Lifecycle
 
+<<<<<<< HEAD
 1. **User types** — `"My kitchen faucet is dripping"`
 2. **Frontend sends POST** — `/api/chat → { message, history }`
 3. **Backend calls Claude** — `System prompt + conversation history + user message`
 4. **Claude responds** — `Diagnosis, severity, DIY steps, cost estimate`
 5. **Response displayed** — `Formatted message appears in chat`
+=======
+1. **User types** — "My kitchen faucet is dripping"
+2. **Frontend sends POST** — `/api/chat` → `{ message, history }`
+3. **Backend calls Claude** — System prompt + conversation history + user message
+4. **Claude responds** — Diagnosis, severity, DIY steps, cost estimate
+5. **Response displayed** — Formatted message appears in chat
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 
 ### The Secret Sauce: System Prompt
 
 The system prompt is what makes Claude act as a handyman expert. It tells Claude to:
 
+<<<<<<< HEAD
 - ✓ Diagnose the issue (category + severity)
 - ✓ Give DIY repair steps if it's safe
 - ✓ Estimate cost (DIY vs professional)
 - ✓ Recommend a pro for anything dangerous
 - ✓ Always prioritize safety warnings
+=======
+- Diagnose the issue (category + severity)
+- Give DIY repair steps if it's safe
+- Estimate cost (DIY vs professional)
+- Recommend a pro for anything dangerous
+- Always prioritize safety warnings
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 
 ### Example Conversation
 
@@ -82,21 +116,35 @@ The system prompt is what makes Claude act as a handyman expert. It tells Claude
 
 | Time | Task | Details |
 |------|------|---------|
+<<<<<<< HEAD
 | **0:00–0:30** | Setup & API test | Create project, install deps, verify Claude API key works with a test call |
 | **0:30–1:00** | Backend endpoint | Single POST `/api/chat` route — takes message + history, calls Claude, returns response |
 | **1:00–1:30** | Chat UI | Text input, send button, message list, auto-scroll. Keep it simple. |
 | **1:30–2:00** | Polish & demo prep | Write system prompt, test 3 scenarios, fix any bugs |
+=======
+| 0:00–0:30 | Setup & API test | Create project, install deps, verify Claude API key works with a test call |
+| 0:30–1:00 | Backend endpoint | Single POST `/api/chat` route — takes message + history, calls Claude, returns response |
+| 1:00–1:30 | Chat UI | Text input, send button, message list, auto-scroll. Keep it simple. |
+| 1:30–2:00 | Polish & demo prep | Write system prompt, test 3 scenarios, fix any bugs |
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 
 ### You Only Need 3 Files
 
 ```
+<<<<<<< HEAD
 📄 server.py    — FastAPI backend, one /chat endpoint
 📄 index.html   — Chat UI (or App.jsx if using React)
 📄 .env         — ANTHROPIC_API_KEY=sk-ant-...
+=======
+📄 server.py      — FastAPI backend, one /chat endpoint
+📄 index.html     — Chat UI (or App.jsx if using React)
+📄 .env           — ANTHROPIC_API_KEY=sk-ant-...
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
 ```
 
 ### Skip For Now (Add Later)
 
+<<<<<<< HEAD
 - ✗ Image upload / vision — cool but adds complexity
 - ✗ Database — Claude's knowledge is enough for the demo
 - ✗ RAG / vector search — not needed in 2 hours
@@ -106,3 +154,14 @@ The system prompt is what makes Claude act as a handyman expert. It tells Claude
 ### Demo Tip
 
 > Prepare 3 prompts: a simple fix (leaky faucet), a safety scenario (electrical spark), and a follow-up question ("how long will that take?"). Shows range + conversation memory.
+=======
+- Image upload / vision — cool but adds complexity
+- Database — Claude's knowledge is enough for the demo
+- RAG / vector search — not needed in 2 hours
+- Auth / user accounts — unnecessary for hackathon
+- Booking / scheduling — mock it in the system prompt
+
+### Demo Tip
+
+Prepare 3 prompts: a simple fix (leaky faucet), a safety scenario (electrical spark), and a follow-up question ("how long will that take?"). Shows range + conversation memory.
+>>>>>>> 25a87157aa5e479504e7e9a3d3eb99dd3b99125e
