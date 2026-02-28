@@ -1,5 +1,81 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
+/** Hammer icon as inline SVG */
+function HammerIcon({ size = 24, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Handle */}
+      <rect x="18" y="34" width="8" height="26" rx="3" fill="#b87333" />
+      <rect x="20" y="34" width="4" height="26" rx="1.5" fill="#d4956a" opacity="0.5" />
+      {/* Head */}
+      <rect x="6" y="20" width="36" height="16" rx="3" fill="#888" />
+      <rect x="6" y="20" width="36" height="8" rx="3" fill="#aaa" />
+      {/* Claw */}
+      <path d="M38 28 L50 20 Q54 17 52 24 L44 32 Z" fill="#888" />
+      <path d="M38 28 L50 21 Q53 18.5 51.5 23 L44 30 Z" fill="#aaa" />
+    </svg>
+  );
+}
+
+/** Friendly handyman mascot as inline SVG */
+function MascotIcon({ size = 120, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      fill="none"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Body / overalls */}
+      <rect x="38" y="62" width="44" height="36" rx="6" fill="#2563eb" />
+      <rect x="46" y="62" width="28" height="20" rx="4" fill="#3b82f6" />
+      {/* Overall straps */}
+      <rect x="46" y="56" width="6" height="12" rx="2" fill="#2563eb" />
+      <rect x="68" y="56" width="6" height="12" rx="2" fill="#2563eb" />
+      {/* Head */}
+      <circle cx="60" cy="42" r="20" fill="#fbbf24" />
+      {/* Face */}
+      <circle cx="53" cy="39" r="2.5" fill="#333" />
+      <circle cx="67" cy="39" r="2.5" fill="#333" />
+      {/* Smile */}
+      <path d="M52 48 Q60 56 68 48" stroke="#333" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* Hard hat */}
+      <ellipse cx="60" cy="28" rx="22" ry="10" fill="#f59e0b" />
+      <rect x="38" y="24" width="44" height="8" rx="4" fill="#f59e0b" />
+      <rect x="54" y="18" width="12" height="8" rx="3" fill="#fbbf24" />
+      {/* Hat brim */}
+      <rect x="34" y="30" width="52" height="4" rx="2" fill="#d97706" />
+      {/* Arms */}
+      <rect x="24" y="65" width="16" height="8" rx="4" fill="#fbbf24" />
+      <rect x="80" y="65" width="16" height="8" rx="4" fill="#fbbf24" />
+      {/* Hands */}
+      <circle cx="24" cy="69" r="5" fill="#fcd34d" />
+      <circle cx="96" cy="69" r="5" fill="#fcd34d" />
+      {/* Hammer in right hand */}
+      <rect x="93" y="56" width="4" height="20" rx="2" fill="#b87333" transform="rotate(15, 95, 66)" />
+      <rect x="88" y="50" width="16" height="8" rx="2" fill="#888" transform="rotate(15, 96, 54)" />
+      {/* Legs */}
+      <rect x="44" y="94" width="10" height="14" rx="4" fill="#1e40af" />
+      <rect x="66" y="94" width="10" height="14" rx="4" fill="#1e40af" />
+      {/* Boots */}
+      <rect x="42" y="104" width="14" height="6" rx="3" fill="#78350f" />
+      <rect x="64" y="104" width="14" height="6" rx="3" fill="#78350f" />
+      {/* Tool belt */}
+      <rect x="38" y="82" width="44" height="5" rx="2" fill="#92400e" />
+      <rect x="56" y="82" width="8" height="8" rx="2" fill="#78350f" />
+    </svg>
+  );
+}
+
 const EXAMPLE_PROMPTS = [
   "My kitchen faucet won't stop dripping",
   "There's a crack in my drywall near the ceiling",
@@ -253,7 +329,10 @@ function App() {
     <div className={`app ${darkMode ? 'dark' : ''}`}>
       <header className="header">
         <div className="header-top">
-          <h1>FixIt Bot</h1>
+          <div className="header-logo">
+            <HammerIcon size={28} />
+            <h1>FixIt Bot</h1>
+          </div>
           <div className="header-actions">
             {messages.length > 0 && (
               <button className="clear-btn" onClick={clearChat} title="Clear chat">
@@ -286,7 +365,9 @@ function App() {
 
         {messages.length === 0 && !dragOver && (
           <div className="empty-state">
-            <div className="empty-icon">🔧</div>
+            <div className="mascot-icon">
+              <MascotIcon size={120} />
+            </div>
             <h2>How can I help?</h2>
             <p>Ask me about any home repair issue, or upload a photo for diagnosis.</p>
             <div className="example-prompts">
@@ -305,6 +386,11 @@ function App() {
 
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
+            {msg.role === 'assistant' && (
+              <div className="assistant-avatar">
+                <MascotIcon size={32} />
+              </div>
+            )}
             <div className="message-bubble">
               {msg.image && (
                 <img src={msg.image} alt="Uploaded" className="message-image" />
@@ -332,6 +418,9 @@ function App() {
 
         {loading && (
           <div className="message assistant">
+            <div className="assistant-avatar">
+              <MascotIcon size={32} />
+            </div>
             <div className="message-bubble">
               <div className="loading-indicator">
                 <span className="dot"></span>
