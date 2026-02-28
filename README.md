@@ -1,6 +1,6 @@
 # FixIt Bot — Simple System Design
 
-> 2-hour hackathon build · text input only · minimal viable product
+> 2-hour hackathon build · text + photo input · minimal viable product
 
 ---
 
@@ -8,23 +8,23 @@
 
 ### Frontend — React Chat UI
 
-Simple text input, send button, message list. That's it.
+Text input, photo upload button, send button, message list. Users can type a description, snap a photo of the problem, or both. Image preview shows before sending.
 
-**Tech:** React or plain HTML/JS
+**Tech:** React or plain HTML/JS · `<input type="file" accept="image/*" capture="environment">` for camera/gallery
 
 ### Backend — API Server
 
-One endpoint: receives user message, calls Claude API, returns response.
+One endpoint: receives user message (text, image, or both), calls Claude API, returns response. Images are sent as base64-encoded data.
 
 **Tech:** FastAPI (Python) or Express (Node)
 
 ### AI — Claude API
 
-System prompt turns Claude into a handyman expert. Diagnoses issues, gives DIY steps, estimates costs.
+System prompt turns Claude into a handyman expert. Diagnoses issues, gives DIY steps, estimates costs. Claude's vision capability lets it analyze photos of damage, identify parts, and assess severity visually.
 
-**Tech:** Claude Sonnet · tool use for structured output
+**Tech:** Claude Sonnet · vision + tool use for structured output
 
-> **That's it. 3 pieces. User types → backend calls Claude → response appears.**
+> **That's it. 3 pieces. User types or snaps a photo → backend calls Claude → response appears.**
 
 ---
 
@@ -32,16 +32,17 @@ System prompt turns Claude into a handyman expert. Diagnoses issues, gives DIY s
 
 ### Request Lifecycle
 
-1. **User types** — "My kitchen faucet is dripping"
-2. **Frontend sends POST** — `/api/chat` → `{ message, history }`
-3. **Backend calls Claude** — System prompt + conversation history + user message
-4. **Claude responds** — Diagnosis, severity, DIY steps, cost estimate
+1. **User types or uploads a photo** — "My kitchen faucet is dripping" or snaps a photo of the problem
+2. **Frontend sends POST** — `/api/chat` → `{ message, history, image? }` (image as base64 if provided)
+3. **Backend calls Claude** — System prompt + conversation history + user message (text and/or image content blocks)
+4. **Claude responds** — Diagnosis, severity, DIY steps, cost estimate. References what it sees in the photo if one was provided.
 5. **Response displayed** — Formatted message appears in chat
 
 ### The Secret Sauce: System Prompt
 
 The system prompt is what makes Claude act as a handyman expert. It tells Claude to:
 
+- Analyze uploaded photos to identify visible damage, parts, or issues
 - Diagnose the issue (category + severity)
 - Give DIY repair steps if it's safe
 - Estimate cost (DIY vs professional)
@@ -70,6 +71,38 @@ DIY: $8–15 · Pro: $75–150
 Time: ~30 minutes
 ```
 
+**User (with photo):**
+> [Uploads photo of water-stained ceiling] "I noticed this today — is this serious?"
+
+**FixIt Bot:**
+```
+Issue: Water damage / ceiling leak
+Severity: Moderate–High
+Category: Plumbing / Water Damage
+
+I can see brownish water staining on your ceiling with some bubbling paint.
+This indicates an active or recent leak from above — likely a pipe, bathroom,
+or roof issue.
+
+Immediate steps:
+1. Check the room directly above for leaks (toilet, shower, sink)
+2. Place a bucket underneath if still dripping
+3. Do NOT poke the bubbling area — it may release trapped water
+
+If from plumbing above:
+- Turn off water to the fixture
+- DIY fix depends on source (could be a supply line or drain)
+
+If from the roof:
+- Check attic for daylight or wet spots
+- Temporary tarp if accessible
+
+DIY: $20–80 (if simple supply line) · Pro: $150–500+
+Time: Varies — find the source first
+
+⚠️ Address this quickly. Prolonged moisture leads to mold and structural damage.
+```
+
 ---
 
 ## Build Plan
@@ -80,7 +113,7 @@ Time: ~30 minutes
 |------|------|---------|
 | 0:00–0:30 | Setup & API test | Create project, install deps, verify API key works with a test call |
 | 0:30–1:00 | Backend endpoint | Single POST `/api/chat` route — takes message + history, calls Claude, returns response |
-| 1:00–1:30 | Chat UI | Text input, send button, message list, auto-scroll. Keep it simple. |
+| 1:00–1:30 | Chat UI | Text input, photo upload button, send button, message list, image preview, auto-scroll |
 | 1:30–2:00 | Polish & demo prep | Write system prompt, test 3 scenarios, fix any bugs |
 
 ### You Only Need 3 Files
@@ -93,7 +126,6 @@ index.html     — Chat UI (or App.jsx if using React)
 
 ### Skip For Now (Add Later)
 
-- Image upload / vision — cool but adds complexity
 - Database — Claude's knowledge is enough for the demo
 - RAG / vector search — not needed in 2 hours
 - Auth / user accounts — unnecessary for hackathon
@@ -101,4 +133,4 @@ index.html     — Chat UI (or App.jsx if using React)
 
 ### Demo Tip
 
-Prepare 3 prompts: a simple fix (leaky faucet), a safety scenario (electrical spark), and a follow-up question ("how long will that take?"). Shows range + conversation memory.
+Prepare 3 prompts: a simple fix (leaky faucet), a photo demo (snap a picture of water damage or a cracked wall), and a safety scenario (electrical spark). Shows text + vision + conversation memory.
